@@ -1,0 +1,40 @@
+---
+title: "Lab6"
+author: "Kwon Yong Chan"
+date: '2021 2 15 '
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Lab6. 사례연구: 2000년 미 대선
+florida 데이터는 67개 카운티 별로 13개의 정보가 기록되어 있다. 우리는 이중 BUSH(부시 후보의 득표)를 예측변수로, BUCHANAN(뷰캐넌 후보의 득표)를 반응변수로 사용하여 회귀분석을 실시한다. 이떄 with 함수는 본 실습파일에서는 구현이 안되는데 각자의 pc에서 콘솔창에 해당 명령어를 입력하면 우측 하단 'plots' 세션에 plot이 그려지면서 커서가 십자모양으로 바뀌는데 이때 이상치 2개 지점을 클릭해주면 county 이름이 나타나게 된다.
+
+```{r florida}
+library(UsingR)
+attach(florida)
+
+result.lm <- lm(BUCHANAN ~ BUSH)
+
+plot(BUSH,BUCHANAN)
+abline(result.lm)
+
+with(florida,identify(BUSH,BUCHANAN,n=2, labels = County))
+
+```
+
+# 회귀분석 결과 알아보기
+
+```{r output}
+summary(result.lm)
+```
+# 회귀모형 진단
+왼쪽 상단의 잔차 vs 반응변수의 추정치의 산점도로 선형관계 가정에 대한 검증을 할 수 있다. 오른쪽 상단의 경우 정규성 가정을 검증하는 방법으로 오차항이 정규분포를 따른다면 직선모양을 관축할 수 있어야 한다. 왼쪽 하단의 그림은 등분산성에 대한 가정을 체크할 수 있다. 오른쪽 하단의 그림은 이상점 유무를 탐지하는데 유용하다.
+
+
+```{r diagnosis}
+par(mfrow=c(2,2))
+plot(result.lm)
+```

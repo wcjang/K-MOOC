@@ -1,0 +1,21 @@
+---
+title: "Lab5"
+author: "Kwon Yong Chan"
+date: '2021 2 15 '
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Lab5. R과 Rstudio 사용법 소개
+
+Lab5에서는 R과 Rstudio사용법에 대해서 간략하게 소개한다. 이때 The Art of Statistics(https://github.com/dspiegel29/ArtofStatistics) 에 사용된 galton의 아버지와 아들의 키에 관한 데이터를 불러보고 summary를 제시한다.
+
+```{r galton}
+galton <- read.csv("05-1-galton-x.csv",header = TRUE)
+attach(galton)
+
+summary(galton)
+```

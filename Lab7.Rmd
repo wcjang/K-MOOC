@@ -1,0 +1,114 @@
+---
+title: "Lab7"
+author: "Kwon Yong Chan"
+date: '2021 2 15 '
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Lab7. 사례연구 : 타이타닉 승객들의 생존확률
+
+케글에서 2012년부터 2015년까지 타이타닉 승객들의 생존확률을 예측하는 경진대회를 개최하였다. 데이터는 897명으로 이루어진 훈련자료와 412명으로 이루어진 평가자료로 구성되어 있다.
+
+```{r library, message=FALSE, warning=FALSE}
+library(dplyr) # Data Manipulation
+library(ggplot2) # Visualization
+library(caTools) # Prediction: Splitting Data
+library(ROCR) # Prediction: ROC Curve
+library(rpart) # Prediction: Decision Tree
+library(rpart.plot) # Prediction: Decision Tree
+```
+
+```{r data}
+train <- read.csv('train.csv')
+test <- read.csv('test.csv')
+
+titanic <- bind_rows(train,test)
+summary(titanic)
+```
+# 데이터 전처리 : 새로운 변수 생성(호칭)
+
+```{r data2}
+# Grab passenger title from passenger name
+titanic$Title <- gsub("^.*, (.*?)\\..*$", "\\1", titanic$Name)
+
+# Frequency of each title by sex
+table(titanic$Sex, titanic$Title)
+
+# First, I reassign few categories 
+titanic$Title[titanic$Title == 'Mlle' | titanic$Title == 'Ms'] <- 'Miss' 
+titanic$Title[titanic$Title == 'Mme']  <- 'Mrs' 
+
+# Then, I create a new category with low frequency of titles
+Other <- c('Dona', 'Dr', 'Lady', 'the Countess','Capt', 'Col', 'Don', 'Jonkheer', 'Major', 'Rev', 'Sir')
+titanic$Title[titanic$Title %in% Other]  <- 'Other'
+
+# Let's see if it worked
+table(titanic$Sex, titanic$Title)
+```
+# 데이터 전처리 : 새로운 변수 생성(가족 숫자)
+
+```{r data3}
+FamilySize <- titanic$SibSp + titanic$Parch + 1
+
+table(FamilySize)
+
+# Create a family size feature with three categories
+titanic$FamilySize <- sapply(1:nrow(titanic), function(x) 
+                          ifelse(FamilySize[x]==1, "Single", 
+                          ifelse(FamilySize[x]>4, "Large", "Small")))
+
+table(titanic$FamilySize)
+```
+# 데이터 전처리 : 새로운 훈련자료와 평가자료
+새롭게 생성한 Family Size와 Title을 포함하는 훈련 자료와 평가자료를 만든다. 평가자료에는 생존여부가 포함되어 있지 않기때문에 분류 알고리즘의 성능을 평가하기 위한 별도의 검증 자료를 생성한다.
+```{r data4}
+# Splitting the dataset into the Training set and Test set
+train_original <- titanic[1:891, c("Survived","Pclass","Sex","Age","SibSp","Parch","Fare","Embarked","Title","FamilySize")]
+test_original <- titanic[892:1309, c("Pclass","Sex","Age","SibSp","Parch","Fare","Embarked","Title","FamilySize")]
+
+# Splitting the Training set into the Training set and Validation set
+set.seed(789)
+split = sample.split(train_original$Survived, SplitRatio = 0.8)
+train = subset(train_original, split == TRUE)
+test = subset(train_original, split == FALSE)
+```
+
+# 의사결정나무 적합 및 성능평가(Confusion Matrix)
+
+```{r tree1}
+# Fitting Decision Tree Classification Model to the Training set
+classifier = rpart(Survived ~ ., data = train, method = 'class')
+
+# Tree Visualization
+rpart.plot(classifier, extra=4)
+
+# Predicting the Validation set results
+y_pred = predict(classifier, newdata = test[,-which(names(test)=="Survived")], type='class')
+
+# Checking the prediction accuracy
+table(test$Survived, y_pred) # Confusion matrix
+
+error <- mean(test$Survived != y_pred) # Misclassification error
+paste('Accuracy',round(1-error,4))
+```
+
+# 의사결정나무 성능평가 : ROC 곡선
+
+```{r tree2}
+# ROC curve
+prob_pred = predict(classifier, newdata = test[,-which(names(test)=="Survived")], type = 'prob')
+fitpred = prediction(prob_pred[,2], test$Survived)
+fitperf = performance(fitpred,"tpr","fpr")
+plot(fitperf,col='green',lwd=2,main='ROC Curve')
+abline(a=0, b=1, lwd=2,lty=2,col='gray')
+
+#AUC calculation
+dt_auc <- performance(fitpred, measure = 'auc')
+titanic_dt_auc <- dt_auc@y.values[[1]]
+titanic_dt_auc
+```
+
