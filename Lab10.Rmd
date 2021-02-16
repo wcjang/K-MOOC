@@ -1,0 +1,43 @@
+---
+title: "Lab10"
+author: "Kwon Yong Chan"
+date: '2021 2 16 '
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Lab10. 사례연구
+
+성별에 따라 선호하는 여자친구(걸그룹) 멤버가 차이가 있는지 알아보기 위해 카이제곱 검정을 시행한다.
+
+```{r chi}
+library(DT)
+gfriend.tab1 <- matrix(c(20,19,33,34,30,27,22,22,22,32,23,16), nrow =2)
+dimnames(gfriend.tab1) <- list(sex=c("male", "female"), member=c("소원","예린","은하","유주","신비","엄지"))
+
+chisq.test(gfriend.tab1)
+```
+
+# 다중비교
+
+Multtest package를 설치하고 Golub et al.(1999)의 급성백혈병 자료를 불러온다.
+
+```{r multit, message=FALSE}
+library(multtest)
+
+#2표본 t-검정을 유전자별로 실시하고 p값을 구하자.
+data(golub)
+teststat = mt.teststat(golub, golub.cl)
+rawp = 2 * (1 - pnorm(abs(teststat)))
+
+#Bonferroni 교정과 FDR control 방법을 시행하자.
+adjusted = mt.rawp2adjp(rawp, c("Bonferroni", "BH"))
+
+#Bonferrni 교정방법과 FDR control을 통해 귀무가설을 기각한 횟수
+sum(adjusted$adj[,2] <0.05) #Bonferroni
+
+sum(adjusted$adj[,3] <0.05) #FDR
+```

@@ -1,0 +1,65 @@
+---
+title: "Lab9"
+author: "Kwon Yong Chan"
+date: '2021 2 16 '
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Lab9. 사례연구
+
+이항분포 : 동전을 10번 던졌을 때 앞면이 5번 나올 확률과 100번 던졌을 떄 앞여이 50번 나올 확률을 계산해보자.
+
+```{r binom}
+dbinom(5, 10, 0.5)
+
+dbinom(50, 100, 0.5)
+
+#동전을 10번 던졌을 때 앞면이 4번 이하로 나올 확률과 100번 던졌을 때 앞면이 40번 이하 나올 확률을 계산해보자
+pbinom(4, 10, 0.5)
+
+pbinom(40, 100, 0.5)
+```
+
+# 룰렛게임
+
+먼저 s를 강원랜드의 수입이라고 가정하자. 1000명에 대해서 나오는 수입의 분포를 총 B=10000번 시뮬레이션을 통해 알아보자
+
+```{r game}
+n <- 1000
+B <- 10000
+roulette_winnings <- function(n){
+  X <- sample(c(-1,1), n, replace = TRUE, prob = c(9/19, 10/19))
+  sum(X)
+}
+S <- replicate(B, roulette_winnings(n))
+
+#강원랜드가 돈을 잃을 확률은?
+mean(S<0)
+```
+# 이항분포의 정규근사
+
+```{r asym}
+hist(S, freq = FALSE)
+x <- seq(-60, 200, by = 1)
+lines(x,dnorm(x, mean = mean(S), sd=sd(S)), col = "red")
+```
+# 신뢰구간
+
+시뮬레이션을 통해 신뢰구간의 개념을 설명한다. 
+```{r sim}
+library(dplyr)
+N <- 1000
+B <- 10000
+p <- 0.45
+inside <- replicate(B, {
+  x <- sample(c(0,1), size = N, replace = TRUE, prob = c(1-p,p))
+  x_hat <- mean(x)
+  se_hat <- sqrt(x_hat * (1 - x_hat) / N)
+  between(p, x_hat - 1.96 * se_hat, x_hat + 1.96 * se_hat)
+})
+mean(inside)
+```
