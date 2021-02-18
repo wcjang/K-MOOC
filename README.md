@@ -6,7 +6,7 @@
 - 통계적 추론 개념에 대해 설명할 수 있다.
 - 분석결과를 통계 전문용어를 사용하지 않고 일상적인 용어로 설명할 수 있다.
 ## 강의 website
--이 교과목의 Website 주소는 http://wwwdev.kmooc.kr/courses/course-v1:SNUk+SNU064.020k+2020/about 이다.
+이 교과목의 Website 주소는 http://wwwdev.kmooc.kr/courses/course-v1:SNUk+SNU064.020k+2020/about 이다.
 
 ## Lab 소개
 - Lab5에서는 galton의 아버지와 아들의 키에 관한 데이터를 불러오고 summary함수를 사용법에 대해 배운다.
