@@ -9,6 +9,7 @@
 이 교과목의 Website 주소는 http://wwwdev.kmooc.kr/courses/course-v1:SNUk+SNU064.020k+2020/about 이다.
 
 ## Lab 소개
+- 이 Github 사이트는 '데이터로 배우는 통계학' 강좌중 R을 이용한 실습에 대한 코드를 Rmd, html 형식으로 제공한다.
 - Lab5에서는 galton의 아버지와 아들의 키에 관한 데이터를 불러오고 summary함수를 사용법에 대해 배운다.
 - Lab6에서는 frorida 데이터를 통해 회귀분석을 실시하고 그 결과를 알아보고 회귀모형 진단에 대해서 배운다.
 - Lab7에서는 타이타닉 데이터를 이용해서 데이터 전처리와 의사결정나무 적합 및 성능평가(Confusion matrix, ROC 곡선)에 대해서 배운다.
