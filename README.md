@@ -6,7 +6,7 @@
 - 통계적 추론 개념에 대해 설명할 수 있다.
 - 분석결과를 통계 전문용어를 사용하지 않고 일상적인 용어로 설명할 수 있다.
 ## 강의 website
-이 교과목의 Website 주소는 http://www.kmooc.kr/courses/course-v1:SNUk+SNU064.020k+2020/about 이다.
+이 교과목의 Website 주소는 http://www.kmooc.kr/courses/course-v1:SNUk+SNU064.020k+2023_T1/about 이다.
 
 ## Lab 소개
 - 이 Github 사이트는 '데이터로 배우는 통계학' 강좌중 R을 이용한 실습에 대한 코드를 Rmd, html 형식으로 제공한다.
